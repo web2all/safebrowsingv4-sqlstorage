@@ -1,0 +1,38 @@
+PRAGMA synchronous = OFF;
+PRAGMA journal_mode = MEMORY;
+BEGIN TRANSACTION;
+CREATE TABLE `hashes_32b_full` (
+  `hs32f_prefix` char(8) NOT NULL
+,  `hs32f_hash` char(64) DEFAULT NULL
+,  `hs32f_lst_id` integer DEFAULT NULL
+,  `hs32f_meta` blob
+,  `hs32f_expire` datetime NOT NULL
+);
+CREATE TABLE `hashes_4b` (
+  `hs4b_prefix` char(8) NOT NULL
+,  `hs4b_lst_id` integer  NOT NULL
+,  `hs4b_long_prefix` integer  NOT NULL DEFAULT '0'
+,  PRIMARY KEY (`hs4b_prefix`,`hs4b_lst_id`,`hs4b_long_prefix`)
+);
+CREATE TABLE `hashes_xb` (
+  `hsxb_prefix` char(64) NOT NULL
+,  `hsxb_lst_id` integer  NOT NULL
+,  `hsxb_long_prefix` integer  NOT NULL
+,  PRIMARY KEY (`hsxb_prefix`,`hsxb_lst_id`)
+);
+CREATE TABLE `list` (
+  `lst_id` integer  NOT NULL PRIMARY KEY AUTOINCREMENT
+,  `lst_name` varchar(100) NOT NULL
+,  `lst_description` varchar(255) NOT NULL
+,  `lst_state` text NOT NULL
+,  `lst_last_updated` timestamp NOT NULL 
+,  `lst_last_reset` timestamp NULL DEFAULT NULL
+);
+CREATE TABLE `updater_state` (
+  `upst_field` varchar(255) NOT NULL
+,  `upst_value` integer NOT NULL
+,  PRIMARY KEY (`upst_field`)
+);
+CREATE INDEX "idx_hashes_4b_indice_sort" ON "hashes_4b" (`hs4b_lst_id`,`hs4b_prefix`,`hs4b_long_prefix`);
+CREATE INDEX "idx_hashes_32b_full_hs32f_prefix" ON "hashes_32b_full" (`hs32f_prefix`,`hs32f_expire`);
+END TRANSACTION;

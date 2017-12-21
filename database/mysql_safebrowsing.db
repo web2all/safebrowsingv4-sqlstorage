@@ -1,0 +1,53 @@
+-- Adminer 4.2.1 MySQL dump
+
+SET NAMES utf8;
+SET time_zone = '+00:00';
+SET foreign_key_checks = 0;
+SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
+
+CREATE TABLE `hashes_32b_full` (
+  `hs32f_prefix` char(8) CHARACTER SET ascii COLLATE ascii_bin NOT NULL COMMENT 'The 4 bye hash prefix in hex notation',
+  `hs32f_hash` char(64) CHARACTER SET ascii COLLATE ascii_bin DEFAULT NULL COMMENT 'Full length hash in hex notation or null if no hashes for this prefix',
+  `hs32f_lst_id` smallint(5) DEFAULT NULL COMMENT 'The list in which the hash was found (if found)',
+  `hs32f_meta` blob COMMENT 'Optional raw meta data',
+  `hs32f_expire` datetime NOT NULL COMMENT 'Till when is this data valid',
+  KEY `hs32f_prefix` (`hs32f_prefix`,`hs32f_expire`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Cache full length hashes';
+
+
+CREATE TABLE `hashes_4b` (
+  `hs4b_prefix` char(8) CHARACTER SET ascii COLLATE ascii_bin NOT NULL COMMENT 'Hash prefix, hexadecimal notation of the first 4 bytes',
+  `hs4b_lst_id` smallint(5) unsigned NOT NULL COMMENT 'Foreign key to list table',
+  `hs4b_long_prefix` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'For 4b hashes value is 0. If nonzero defines sort order and lookup in hashes_xb is needed.',
+  PRIMARY KEY (`hs4b_prefix`,`hs4b_lst_id`,`hs4b_long_prefix`),
+  KEY `indice_sort` (`hs4b_lst_id`,`hs4b_prefix`,`hs4b_long_prefix`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Hash table with 4 byte prefixes';
+
+
+CREATE TABLE `hashes_xb` (
+  `hsxb_prefix` char(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL COMMENT 'Hash prefix, hexadecimal notation of the first x bytes',
+  `hsxb_lst_id` smallint(5) unsigned NOT NULL COMMENT 'Foreign key to list table',
+  `hsxb_long_prefix` tinyint(2) unsigned NOT NULL COMMENT 'Sortorder for all prefixes with same first 4 bytes',
+  PRIMARY KEY (`hsxb_prefix`,`hsxb_lst_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Hash table with 5-32 byte prefixes';
+
+
+CREATE TABLE `list` (
+  `lst_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT COMMENT 'List id',
+  `lst_name` varchar(100) NOT NULL COMMENT 'List name (as used by google)',
+  `lst_description` varchar(255) NOT NULL COMMENT 'What is this list about',
+  `lst_state` text NOT NULL COMMENT 'The list clientstate from google',
+  `lst_last_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'When was the list last updated',
+  `lst_last_reset` timestamp NULL DEFAULT NULL COMMENT 'When was the last full reset of all list data',
+  PRIMARY KEY (`lst_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='All the available lists';
+
+
+CREATE TABLE `updater_state` (
+  `upst_field` varchar(255) NOT NULL COMMENT 'The field name',
+  `upst_value` bigint(20) NOT NULL COMMENT 'the fields value',
+  PRIMARY KEY (`upst_field`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Store the updater state';
+
+
+-- 2017-07-11 14:21:19

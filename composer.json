@@ -1,0 +1,34 @@
+{
+    "name": "web2all/safebrowsingv4-sqlstorage",
+    "description": "Google safebrowsing SQL storage implementation",
+    "keywords": ["google","safebrowsing","sql storage"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Merijn van den Kroonenberg",
+            "email": "merijn@web2all.nl"
+        }
+    ],
+    "require": {
+        "php": "~5.4",
+        "web2all/framework" :"~1",
+        "web2all/tableobject" :"~1",
+        "adodb/adodb-php" :"~5",
+        "web2all/safebrowsingv4" : "~1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.8"
+    },
+    "autoload": {
+        "classmap": [
+            "src/"
+        ]
+    },
+    "autoload-dev": {
+        "classmap": [
+            "tests/",
+            "vendor/web2all/safebrowsingv4/tests/"
+        ]
+    }
+}
+
